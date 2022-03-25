@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Button, Image, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Button, Image, StyleSheet, Text, View } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
 export default function App() {
   const projectId = '';
   const projectSecret = '';
   const [content, setContent] = useState<{hash: string | null, contentType: string | null }>({hash: null, contentType: null})
+  const [activity, setActivity] = useState<{ loading: boolean }>({ loading: false })
 
   const uploadIPFS = async (body: FormData, contentType: "plain" | "file") => {
     const auth = "Basic " + btoa(projectId + ":" + projectSecret);
@@ -17,6 +18,7 @@ export default function App() {
       body,
     });
     const { Hash, Name, Size } = await response.json();
+    setActivity({ loading: !response.ok })
     setContent({ hash: Hash, contentType })
     console.log("## Gateway URL", `https://ipfs.infura.io/ipfs/${Hash}`);
   };
@@ -51,6 +53,7 @@ export default function App() {
       const blob =  await fetch(result.uri).then(res => res.blob())
       // @ts-ignore
       body.append("file", blob);
+      setActivity({ loading: true })
       await uploadIPFS(body, "file")
     }
   };
@@ -64,17 +67,18 @@ export default function App() {
   return (
     <View style={styles.container}>
       {!content.contentType && !content.hash ?
-      <>
-      {/* <Button title="Upload JSON" onPress={uploadText} /> */}
-      <Button title="Upload image from camera roll" onPress={pickImage} /> 
-      </>
+        <>
+          {/* <Button title="Upload JSON" onPress={uploadText} /> */}
+          <Button title="Upload image from camera roll" onPress={pickImage} /> 
+        </>
       :
         <>
-       <Text>{content.hash}</Text>
-       {/* <Button title="Fetch Content" onPress={() => fetchIPFS()} /> */}
-       <Button title="Clear" onPress={() => setContent({hash: null, contentType: null})} />
-      </>}
-      <Image source={{uri: `https://ipfs.infura.io/ipfs/${content.hash}`}} style={{height: 200, width: '80%'}} />
+          <Text>{content.hash}</Text>
+          {/* <Button title="Fetch Content" onPress={() => fetchIPFS()} /> */}
+          <Button title="Clear" onPress={() => setContent({hash: null, contentType: null})} />
+          <Image source={{uri: `https://ipfs.infura.io/ipfs/${content.hash}`}} style={{height: 200, width: '80%'}} />
+        </>}
+      <ActivityIndicator animating={activity.loading} />
     </View>
   );
 }
