@@ -48,8 +48,9 @@ export default function App() {
 
     if (!result.cancelled) {
       const body = new FormData();
+      const blob =  await fetch(result.uri).then(res => res.blob())
       // @ts-ignore
-      body.append("file", { uri: result.uri }, "file");
+      body.append("file", blob);
       await uploadIPFS(body, "file")
     }
   };
