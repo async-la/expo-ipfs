@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { ActivityIndicator, Button, Image, StyleSheet, Text, View } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
+// @ts-ignore
+import base64 from 'react-native-base64';
 
 export default function App() {
   const projectId = '';
@@ -9,7 +11,8 @@ export default function App() {
   const [activity, setActivity] = useState<{ loading: boolean }>({ loading: false });
 
   const uploadIPFS = async (body: FormData, contentType: "plain" | "file") => {
-    const auth = "Basic " + btoa(projectId + ":" + projectSecret);
+    // @ts-ignore
+    const auth = "Basic " + base64.encode(projectId + ":" + projectSecret);
     const response = await fetch("https://ipfs.infura.io:5001/api/v0/add", {
       headers: {
         authorization: auth,
@@ -23,9 +26,11 @@ export default function App() {
     console.log("## Gateway URL", `https://ipfs.infura.io/ipfs/${Hash}`);
   };
 
-/*   const fetchIPFS = async () => {
+/*
+  const fetchIPFS = async () => {
     const url = `https://ipfs.infura.io:5001/api/v0/object/data?arg=${content.hash}`;
-    const auth = "Basic " + btoa(projectId + ":" + projectSecret);
+    // @ts-ignore
+    const auth = "Basic " + base64.encode(projectId + ":" + projectSecret);
     const response = await fetch(url, {
       headers: {
         authorization: auth,
@@ -38,7 +43,8 @@ export default function App() {
       result = await response.json();
       alert(result);
     } 
-  }; */
+  };
+*/
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -58,11 +64,13 @@ export default function App() {
     }
   };
 
-/*   const uploadText = () => {
+/*
+  const uploadText = () => {
     const body = new FormData();
     body.append("file", JSON.stringify({ name: "John Doe"}), "file");
     uploadIPFS(body, "plain");
-  } */
+  }
+*/
 
   return (
     <View style={styles.container}>
