@@ -15,7 +15,7 @@ export default function App() {
     const auth = "Basic " + base64.encode(projectId + ":" + projectSecret);
     const response = await fetch("https://ipfs.infura.io:5001/api/v0/add", {
       headers: {
-        authorization: auth,
+        Authorization: auth,
       },
       method: "POST",
       body,
@@ -28,12 +28,11 @@ export default function App() {
 
 /*
   const fetchIPFS = async () => {
-    const url = `https://ipfs.infura.io:5001/api/v0/object/data?arg=${content.hash}`;
     // @ts-ignore
     const auth = "Basic " + base64.encode(projectId + ":" + projectSecret);
-    const response = await fetch(url, {
+    const response = await fetch(`https://ipfs.infura.io:5001/api/v0/object/data?arg=${content.hash}`, {
       headers: {
-        authorization: auth,
+        Authorization: auth,
       },
       method: "POST",
     });
@@ -56,9 +55,10 @@ export default function App() {
 
     if (!result.cancelled) {
       const body = new FormData();
-      const blob =  await fetch(result.uri).then(res => res.blob())
+      const blob = await fetch(result.uri).then(res => res.blob())
+
       // @ts-ignore
-      body.append("file", blob);
+      body.append("file", blob, "file");
       setActivity({ loading: true });
       await uploadIPFS(body, "file");
     }
@@ -74,11 +74,11 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator animating={activity.loading} size="large" style={styles.spinner} />
+      <ActivityIndicator animating={activity.loading} size="large" color="blue" style={styles.spinner} />
       {!content.contentType && !content.hash ?
         <>
           {/* <Button title="Upload JSON" onPress={uploadText} /> */}
-          <Button title="Upload image from camera roll" onPress={pickImage} /> 
+          <Button title="Upload image from camera roll" onPress={pickImage} />
         </>
       :
         <>
@@ -101,9 +101,9 @@ const styles = StyleSheet.create({
   image: {
     height: 200,
     width: "80%",
-    margin: "1rem",
+    margin: 20,
   },
   spinner: {
-    margin: "1rem",
+    margin: 20,
   },
 });
